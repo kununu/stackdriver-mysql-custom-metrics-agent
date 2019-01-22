@@ -7,7 +7,7 @@ settings:
     database_url: "mysql://username:password@host:port/dbname"
     google_cloud_project_id: "some-12345"
     #uncomment and provide path if a google cloud service account is available
-    #google_application_credentials: "google-creds.json"
+    #google_application_credentials: "/google-creds.json"
 metrics:
 - name: "Check of the database is up"
   type: "database/general/is-up"
@@ -25,4 +25,11 @@ $ gcloud auth login
 
 # run it manually or set it up with a cron
 $ ./agent.py config.yaml
+```
+
+OR
+
+```bash
+docker build -t stackdriver-mysql-custom-metrics-agent .
+docker run -d -v $PWD/config.yml:/config.yml -v $PWD/google-creds.json:/google-creds.json stackdriver-mysql-custom-metrics-agent
 ```
