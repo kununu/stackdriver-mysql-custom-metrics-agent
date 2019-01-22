@@ -1,0 +1,10 @@
+.vscode/
+
+config.yaml
+google-creds.json
+
+# virtualenv
+lib/
+include/
+bin/
+.Python
