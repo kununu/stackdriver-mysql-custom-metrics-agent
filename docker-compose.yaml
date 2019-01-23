@@ -1,0 +1,9 @@
+version: '2'
+services:
+  agent:
+    build: .
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/google-creds.json
+    volumes:
+      - ./config.yaml:/config.yaml
+      - ./google-creds.json:/google-creds.json

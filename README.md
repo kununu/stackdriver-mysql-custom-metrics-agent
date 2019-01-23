@@ -1,35 +1,28 @@
+# How to run
+* First make sure you have a GCP service account set up and the credentials file ready as `google-creds.json`. The account needs permission to push metric data to Google Stackdriver
+* Get your Google Cloud Project Id ready, you'll need it in the next step. Of course Stackdriver Monitoring needs to be enabled on your project.
+* Create a configuration file:
 ```bash
-# if you don't have it, install virtualenv
-$ pip3 install virtualenv
-
 $ cat > config.yaml <<EOF
-settings:
-    database_url: "mysql://username:password@host:port/dbname"
-    google_cloud_project_id: "some-12345"
-    #uncomment and provide path if a google cloud service account is available
-    #google_application_credentials: "/google-creds.json"
+google_cloud_project_id: some-123456
+connection:
+    host: 127.0.0.1
+    port: 3306
+    user: root
+    password: secret
+    db: information_schema
 metrics:
 - name: "Check of the database is up"
   type: "database/general/is-up"
   query: >
     SELECT 1
 EOF
-
-$ virtualenv .
-$ bin/activate
-$ pip3 install -U -r requirements.txt
-
-# authenticate if in dev mode and we don't have a google cloud service account
-$ gcloud auth application-default login
-$ gcloud auth login
-
-# run it manually or set it up with a cron
-$ ./agent.py config.yaml
 ```
-
-OR
-
+* Build the docker image
 ```bash
-docker build -t stackdriver-mysql-custom-metrics-agent .
-docker run -d -v $PWD/config.yml:/config.yml -v $PWD/google-creds.json:/google-creds.json stackdriver-mysql-custom-metrics-agent
+docker-compose build
+```
+* Run the docker image
+```bash
+docker-compose up
 ```

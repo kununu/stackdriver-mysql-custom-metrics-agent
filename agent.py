@@ -2,7 +2,6 @@
 
 import sys
 import os
-import urllib.parse
 import yaml
 import pymysql
 import time
@@ -30,22 +29,9 @@ def main():
     with open(sys.argv[1], "r") as stream:
         config = yaml.load(stream)
 
-    # set up google cloud service account if we have one
-    if "google_application_credentials" in config["settings"]:
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config["settings"]["google_application_credentials"]
-
-    database_config = urllib.parse.urlparse(config["settings"]["database_url"])
-
-    connection = pymysql.connect(
-        host=database_config.hostname,
-        port=database_config.port,
-        user=database_config.username,
-        password=database_config.password,
-        db=database_config.path.strip("/")
-    )
-
+    connection = pymysql.connect(**config["connection"])
     client = monitoring_v3.MetricServiceClient()
-    project = client.project_path(config["settings"]["google_cloud_project_id"])
+    project = client.project_path(config["google_cloud_project_id"])
 
     for metric in config["metrics"]:
         client.create_time_series(project,
