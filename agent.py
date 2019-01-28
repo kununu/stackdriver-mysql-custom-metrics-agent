@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
+import datetime
 import os
-import yaml
 import pymysql
+import sys
 import time
+import yaml
 
 from google.cloud import monitoring_v3
 
@@ -13,7 +14,7 @@ def fetch_metric(connection, query, metric):
         cursor.execute(query)
         result = cursor.fetchone()[0]
 
-    print(metric, result)
+    print(datetime.datetime.now(), metric, result)
 
     series = monitoring_v3.types.TimeSeries()
     series.metric.type = "custom.googleapis.com/{}".format(metric)
@@ -29,9 +30,21 @@ def main():
     with open(sys.argv[1], "r") as stream:
         config = yaml.load(stream)
 
+    if not "google_project_id" in config:
+        config["google_project_id"] = os.environ["GOOGLE_PROJECT_ID"]
+
+    if not "connection" in config:
+        config["connection"] = {
+            "host": os.environ["DB_HOST"],
+            "port": os.environ["DB_PORT"],
+            "user": os.environ["DB_USER"],
+            "password": os.environ["DB_PASSWORD"],
+            "db": os.environ["DB_NAME"],
+        }
+
     connection = pymysql.connect(**config["connection"])
     client = monitoring_v3.MetricServiceClient()
-    project = client.project_path(config["google_cloud_project_id"])
+    project = client.project_path(config["google_project_id"])
 
     for metric in config["metrics"]:
         client.create_time_series(project,
