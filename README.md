@@ -5,6 +5,10 @@
 ```bash
 $ cat > config.yaml <<EOF
 google_project_id: some-123456
+labels_from_env:
+    pwd: PWD
+labels:
+    server: "staging"
 connection:
     host: 127.0.0.1
     port: 3306
@@ -12,7 +16,7 @@ connection:
     password: secret
     db: information_schema
 metrics:
-- name: "Check of the database is up"
+- name: "Check if the database is up"
   type: "database/general/is-up"
   query: >
     SELECT 1
