@@ -4,7 +4,7 @@
 * Create a configuration file:
 ```bash
 $ cat > config.yaml <<EOF
-google_cloud_project_id: some-123456
+google_project_id: some-123456
 connection:
     host: 127.0.0.1
     port: 3306
@@ -17,6 +17,15 @@ metrics:
   query: >
     SELECT 1
 EOF
+```
+Or alternatively set the following environment variables:
+```
+GOOGLE_PROJECT_ID=some-123456
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=secret
+DB_NAME=information_schema
 ```
 * Build the docker image
 ```bash
