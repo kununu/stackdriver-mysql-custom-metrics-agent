@@ -14,8 +14,6 @@ def fetch_metric(connection, query, metric):
         cursor.execute(query)
         result = cursor.fetchone()[0]
 
-    print(datetime.datetime.now(), metric, result)
-
     series = monitoring_v3.types.TimeSeries()
     series.metric.type = "custom.googleapis.com/{}".format(metric)
     series.resource.type = "global"
@@ -47,8 +45,13 @@ def main():
     project = client.project_path(config["google_project_id"])
 
     for metric in config["metrics"]:
-        client.create_time_series(project,
-            [fetch_metric(connection, metric["query"], metric["type"])])
+        try:
+            result = fetch_metric(connection, metric["query"], metric["type"])
+            client.create_time_series(project, [result])
+        except BaseException as ex:
+            result = ex
+
+        print(datetime.datetime.now(), metric, result)
 
     connection.close()
 
