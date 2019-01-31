@@ -1,10 +1,4 @@
 .vscode/
 
-config.yaml
+config.yaml*
 google-creds.json
-
-# virtualenv
-lib/
-include/
-bin/
-.Python
