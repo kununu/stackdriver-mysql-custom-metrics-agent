@@ -4,7 +4,11 @@
 * Create a configuration file:
 ```bash
 $ cat > config.yaml <<EOF
-google_cloud_project_id: some-123456
+google_project_id: some-123456
+labels_from_env:
+    pwd: PWD
+labels:
+    server: "staging"
 connection:
     host: 127.0.0.1
     port: 3306
@@ -12,11 +16,20 @@ connection:
     password: secret
     db: information_schema
 metrics:
-- name: "Check of the database is up"
+- name: "Check if the database is up"
   type: "database/general/is-up"
   query: >
     SELECT 1
 EOF
+```
+Or alternatively set the following environment variables:
+```
+GOOGLE_PROJECT_ID=some-123456
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=secret
+DB_NAME=information_schema
 ```
 * Build the docker image
 ```bash
