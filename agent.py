@@ -9,8 +9,12 @@ import yaml
 
 from google.cloud import monitoring_v3
 
-def parse_query(query):
-    return query.replace("{insights_db}", os.environ["INSIGHTS_DB_NAME"])
+def apply_substitutions(query, substitutions):
+    for key, val in substitutions.items():
+        target = "{%s}" % key
+        query = query.replace(target, val)
+
+    return query
 
 def fetch_metric(connection, query, metric, labels):
     with connection.cursor() as cursor:
@@ -61,7 +65,7 @@ def main():
         if not "labels" in metric:
             metric["labels"] = {}
 
-        query = parse_query(metric["query"])
+        query = apply_substitutions(metric["query"], config["labels"])
 
         try:
             (series, result) = fetch_metric(
