@@ -9,6 +9,13 @@ import yaml
 
 from google.cloud import monitoring_v3
 
+def apply_substitutions(query, substitutions):
+    for key, val in substitutions.items():
+        target = "{%s}" % key
+        query = query.replace(target, val)
+
+    return query
+
 def fetch_metric(connection, query, metric, labels):
     with connection.cursor() as cursor:
         cursor.execute(query)
@@ -58,10 +65,12 @@ def main():
         if not "labels" in metric:
             metric["labels"] = {}
 
+        query = apply_substitutions(metric["query"], config["labels"])
+
         try:
             (series, result) = fetch_metric(
                 connection,
-                metric["query"],
+                query,
                 metric["type"],
                 {**config["labels"], **metric["labels"]})
             client.create_time_series(project, [series])
